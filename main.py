@@ -6,16 +6,20 @@ from csv import excel
 import pandas as pd
 import numpy as np
 import time
+from matplotlib import pyplot as plt
 
 
 # Global variables
 path_array = []
 column_data = []
+actual_data = []
+final_keys_dict = {}
 primary_key = ""
 present_column_name = ""
 isRollNo = False
 isEmail = False
 isPhone = False
+is_composite_primary_key = False
 
 
 
@@ -73,8 +77,8 @@ def prepare_column_data():
 def get_necessary_data():
     # Main Array
     # Here we fetch necessary data from dataset like roll no and status column
-    actual_data = []
-    is_composite_primary_key = False
+    global actual_data
+    global is_composite_primary_key
     for item in column_data:
         data_arr = []
         if type(item.get("Primary Key")) is list:
@@ -95,6 +99,7 @@ def get_necessary_data():
         data_arr.append(item.get("dataset").get(item.get("Present_Column_Name")))
         actual_data.append(data_arr)
         print(actual_data)
+        get_final_keys_arr()
 
 
 # Format Single Primary Key
@@ -168,6 +173,7 @@ def identify_key_and_format(item_name, data):
     print("Called...", item_name)
     return key_arr
 
+
 # Handle Composite Primary Key
 def handle_composite_primary_key(data):
     #     print(data)
@@ -220,6 +226,182 @@ def handle_composite_primary_key(data):
 
     print("Handle composite primary key...")
     return key_arr1
+
+
+
+def get_final_keys_arr():
+    # Final Keys Array
+    # Primary key set
+    # key_set = {}
+    final_key_arr = []
+
+    for item in actual_data:
+        data_arr = []
+
+        for i in range(len(item) - 1):
+            item_name = item[i].name
+            #         print("HI",item_name)
+            #         If primary is only one
+            if is_composite_primary_key == False:
+                keys = identify_key_and_format(item_name, item[i])
+                for key in keys:
+                    if key not in final_key_arr:
+                        final_key_arr.append(key)
+            #             print(keys)
+            #         If it is composite primary key
+            else:
+                if i < len(item) - 2:
+                    data_arr.append(item[i])
+                else:
+                    data_arr.append(item[i])
+                    keys = handle_composite_primary_key(data_arr)
+                    for key in keys:
+                        if key not in final_key_arr:
+                            final_key_arr.append(key)
+
+
+        #         print("Hello World...!!!")
+
+        # Roll Number Formatting
+        #         for item1 in item[i]:
+        #             item1 = str(item1)
+        #             key = np.nan
+        #             if len(item1) > 3:
+        #                 print(str(item1[ len(item1)-3: ]))
+        #                 key = str(item1[ len(item1)-3: ])
+        #                 key_arr.append(key)
+        #             else:
+        #                 print(item1)
+        #                 key = item1
+        #                 key_arr.append(key)
+        #     item1 = item[len(item)-1]
+        print("---------------------------")
+
+
+    print(final_key_arr)
+    # Initialize empty dictionary with final keys
+    for key in final_key_arr:
+        final_keys_dict[key] = 0
+    print(final_keys_dict)
+    get_present_count()
+
+def get_present_count():
+    # Get presenty count of students
+    for item in actual_data:
+        #     If key is composite
+        if is_composite_primary_key == True:
+            print("Composite primary key...")
+            key_arr = ["" for i in range(len(item[0]))]
+            for i in range(len(item) - 1):
+                is_Roll = False
+                is_Email = False
+                is_Phone = False
+                rollno = ["roll", "rollno", "roll_no", "roll number", "roll no"]
+                email = ["email", "emailid", "email_id"]
+                phone = ["phone", "phoneno", "phone no", "phone_no"]
+                column_name = item[i].name
+                column_name = column_name.lower()
+                #    Check if key is rollno
+                for li in rollno:
+                    if (column_name in li):
+                        is_Roll = True
+                        break
+                if is_Roll == True:
+                    print("Roll no. formatting")
+
+                    for j in range(len(item[i])):
+                        item1 = str(item[i][j])
+                        key = np.nan
+                        if len(item1) > 3:
+                            key = str(item1[len(item1) - 3:])
+                            key = int(key)
+                            key_arr[j] = key_arr[j] + str(key)
+                        else:
+                            #                     print(item1)
+                            key = item1
+                            key = int(key)
+                            key_arr[j] = key_arr[j] + str(key)
+
+
+                elif is_Email == True:
+                    print("Email formatting")
+                elif is_Phone == True:
+                    print("Phone Formatting")
+                else:
+                    for k in range(len(item[i])):
+                        item1 = str(item[i][k])
+                        key = str(item1)
+                        key_arr[k] = key_arr[k] + key
+
+            for i in range(len(key_arr)):
+                if item[len(item) - 1][i] == 1:
+                    final_keys_dict[key_arr[i]] = final_keys_dict.get(key_arr[i]) + 1
+
+            key_arr = None
+
+
+
+
+
+        else:
+            print("Single Primary key...")
+            if isRollNo == True:
+                for i in range(len(item[0])):
+                    item1 = str(item[0][i])
+                    key = np.nan
+                    if len(item1) > 3:
+                        key = str(item1[len(item1) - 3:])
+                        key = int(key)
+                    else:
+                        key = item1
+                        key = int(key)
+                    print(key)
+                    if item[1][i] == 1:
+                        dict[key] = dict.get(key) + 1
+            if isEmail == True:
+                print("It is Email...")
+            if isPhone == True:
+                print("It is Phone...")
+    #                 column_name = item[i]
+    #                 print(column_name)
+
+    print(final_keys_dict)
+    render_chart_buttons()
+
+def bar_plot():
+    present_distinct_values = []
+    for key in final_keys_dict:
+        if final_keys_dict[key] not in present_distinct_values:
+            present_distinct_values.append(final_keys_dict[key])
+
+        # print( key )
+    print( present_distinct_values )
+    dict = {}
+    # Initialize to zero
+    for key in present_distinct_values:
+        dict[key] = 0
+
+    for key in final_keys_dict:
+        dict[ final_keys_dict[key] ] =  dict[ final_keys_dict[key] ] + 1
+
+    print(dict)
+
+    data = []
+    labels = []
+    for key in dict:
+        labels.append(key)
+        data.append(dict[key])
+
+    total = sum(data)
+    plt.pie(data, labels=labels, autopct=lambda p: '{:.0f}'.format(p * total / 100))
+    plt.show()
+def render_chart_buttons():
+    btn1 = tk.Button(root, text="Bar Plot", font=("Arial", 10), command=bar_plot)
+    btn1.pack()
+    btn2 = tk.Button(root, text="Submit", font=("Arial", 10), command=get_excel_no)
+    btn2.pack()
+    btn3 = tk.Button(root, text="Submit", font=("Arial", 10), command=get_excel_no)
+    btn3.pack()
 
 
 def show_info():
