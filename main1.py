@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 import time
 from matplotlib import pyplot as plt
+import customtkinter
+
 
 
 # Global variables
@@ -30,7 +32,7 @@ def print_hi(name):
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 def render_heading():
-    text2 = tk.Label(root, text="Enter excel sheets path ", font=("Arial", 16), pady=10 )
+    text2 = customtkinter.CTkLabel(master=root, text="Enter excel sheets path ", font=("Arial", 16), pady=10)
     text2.pack()
 
 def select_file():
@@ -396,11 +398,11 @@ def bar_plot():
     plt.pie(data, labels=labels, autopct=lambda p: '{:.0f}'.format(p * total / 100))
     plt.show()
 def render_chart_buttons():
-    btn1 = tk.Button(root, text="Bar Plot", font=("Arial", 10), command=bar_plot)
+    btn1 = customtkinter.CTkButton(master=root, text="Bar Plot", font=("Arial", 10), command=bar_plot)
     btn1.pack()
-    btn2 = tk.Button(root, text="Submit", font=("Arial", 10))
+    btn2 = customtkinter.CTkButton(master=root, text="Submit", font=("Arial", 10))
     btn2.pack()
-    btn3 = tk.Button(root, text="Submit", font=("Arial", 10))
+    btn3 = customtkinter.CTkButton(master=root, text="Submit", font=("Arial", 10))
     btn3.pack()
 
 
@@ -408,39 +410,41 @@ def show_info():
     showinfo("Info", "Primary key for all Excelsheets must be same")
 
 def get_primary_key():
-    text2 = tk.Label(root, text="Enter a primary key", font=("Arial", 16), padx=10, pady=20)
-    text2.pack()
-    label1 = tk.Label(primaryKeyInputFrame, text="Enter primary key for Excelsheets: ", font=("Arial", 10))
+    text2 = customtkinter.CTkLabel(master=root, text="Enter a primary key", font=("Arial", 16))
+    text2.pack(padx=10, pady=10)
+    label1 = customtkinter.CTkLabel(master=primaryKeyInputFrame, text="Enter primary key for Excelsheets: ", width=270, anchor=tk.CENTER, font=("Arial", 14))
     label1.grid(row=0, column=0)
-    primary_key_input = tk.Entry(primaryKeyInputFrame, font=("Arial", 16))
-    primary_key_input.grid(row=0, column=1, sticky=tk.W)
+    primary_key_input = customtkinter.CTkEntry(master=primaryKeyInputFrame, font=("Arial", 16))
+    primary_key_input.grid(row=0, column=1)
 
-    btn1 = tk.Button( primaryKeyInputFrame, text="I", font=("Arial italic bold", 10), padx=10, fg="white", bg="blue", command=show_info)
-    btn1.grid(row=0, column=2, sticky=tk.W)
-    primaryKeyInputFrame.pack(padx=10, pady=10)
-    btn = tk.Button(root, text="Submit", font=("Arial", 10), command=lambda: handle_primary_key(primary_key_input))
-    btn.pack()
+    # btn1 = customtkinter.CTkButton(master=primaryKeyInputFrame, text="I", font=("Arial italic bold", 10), padx=10, fg="white", bg="blue", command=show_info)
+    btn1 = customtkinter.CTkButton(master=primaryKeyInputFrame, text="I", font=("Arial italic bold", 16), width=70, command=show_info)
+    btn1.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
+
+    btn = customtkinter.CTkButton(master=primaryKeyInputFrame, text="Submit", width=250, font=("Arial", 16), command=lambda: handle_primary_key(primary_key_input))
+    btn.grid(row=1, column=1, padx=10, pady=10, sticky=tk.W)
+    primaryKeyInputFrame.pack(padx=20, pady=20, fill="both", expand=False)
 
 
 def get_presenty_column_name():
-    text2 = tk.Label(root, text="Enter a present column", font=("Arial", 16), padx=10, pady=20)
-    text2.pack()
-    label1 = tk.Label(presentyColumnInputFrame, text="Enter a presenty column name: ", font=("Arial", 10))
+    text2 = customtkinter.CTkLabel(master=root, text="Enter a present column", font=("Arial", 16))
+    text2.pack(padx=10, pady=10)
+    label1 = customtkinter.CTkLabel(master=presentyColumnInputFrame, text="Enter a presenty column name: ", width=270, anchor=tk.CENTER, font=("Arial", 16))
     label1.grid(row=0, column=0)
-    present_column_input = tk.Entry(presentyColumnInputFrame, font=("Arial", 16))
-    present_column_input.grid(row=0, column=1, sticky=tk.W)
+    present_column_input = customtkinter.CTkEntry(master=presentyColumnInputFrame, font=("Arial", 16))
+    present_column_input.grid(row=0, column=1)
 
-    btn1 = tk.Button( presentyColumnInputFrame, text="I", font=("Arial italic bold", 10), padx=10, fg="white", bg="blue", command=show_info)
-    btn1.grid(row=0, column=2, sticky=tk.W)
-    presentyColumnInputFrame.pack(padx=10, pady=10)
-    btn = tk.Button(root, text="Submit", font=("Arial", 10), command=lambda: handle_presenty_column(present_column_input))
-    btn.pack()
+    btn1 = customtkinter.CTkButton(master=presentyColumnInputFrame, text="I", font=("Arial italic bold", 16), width=70, command=show_info)
+    btn1.grid(row=0, column=2, padx=10, pady=10)
+    btn = customtkinter.CTkButton(master=presentyColumnInputFrame, text="Submit", font=("Arial", 16), width=250, command=lambda: handle_presenty_column(present_column_input))
+    btn.grid(row=1, column=1, padx=10, pady=10)
+    presentyColumnInputFrame.pack(padx=20, pady=20, fill="both", expand=False)
 
 
 # input excel files
 def render_input_UI(no_of_excels):
     render_heading()
-    inputFrame = tk.Frame(root)
+    inputFrame = customtkinter.CTkFrame(master=root)
     inputFrame.columnconfigure(0, weight=1)
     inputFrame.columnconfigure(1, weight=1)
     inputFrame.columnconfigure(2, weight=1)
@@ -448,14 +452,14 @@ def render_input_UI(no_of_excels):
         filename = fd.askopenfilename()
         # Add to file path array
         path_array.append(filename)
-        input_field = tk.Entry(inputFrame, font=("Arial", 16))
+        input_field = customtkinter.CTkEntry(master=inputFrame, width=240, font=("Arial", 16))
         input_field.grid(row=i, column=0, pady=10)
-        btn1 = tk.Button(inputFrame, text="File",  font=("Arial", 12))
+        btn1 = customtkinter.CTkButton(master=inputFrame, text="File",  font=("Arial", 16))
         btn1.grid(row=i, column=1)
         # input_field.delete(0,END)
         input_field.insert(0,filename)
         # fill= tk.Y, expand=True, padx=2, pady=2
-        inputFrame.pack()
+        inputFrame.pack(padx=20, pady=20, fill="both", expand=False)
         time.sleep(1)
     inputFrame.pack()
     print(path_array)
@@ -467,84 +471,45 @@ def get_excel_no():
     print(no_of_excels)
     render_input_UI(no_of_excels)
 
+
 print_hi('PyCharm')
-root = tk.Tk()
+customtkinter.set_appearance_mode("Light")
+customtkinter.set_default_color_theme("dark-blue")
+root = customtkinter.CTk()
+
 root.title("Excelizer")
-root.geometry("500x500")
-label1 = tk.Label(root,text="Excelizer",font=("Arial",18))
-label1.pack(padx=10,pady=10)
+root.geometry("550x500")
+
+label1 = customtkinter.CTkLabel(master=root, text="Excelizer", font=("Arial", 24))
+label1.pack(padx=10, pady=10)
 
 
-# label2 = tk.Label(root,text="The only excel analyzer you need😎")
-# label2.pack()
-# label3 = tk.Label(root,text="Enter the number of Excelsheets: ")
-# label3.pack()
-# tetxbox = tk.Text(root,height=1, font=("Arial",16))
-# tetxbox.pack()
-
-excelInputFrame = tk.Frame(root)
+excelInputFrame = customtkinter.CTkFrame(master=root)
 excelInputFrame.columnconfigure(0, weight=1)
 excelInputFrame.columnconfigure(1, weight=1)
 excelInputFrame.columnconfigure(2, weight=1)
 
-primaryKeyInputFrame = tk.Frame(root)
+primaryKeyInputFrame = customtkinter.CTkFrame(master=root)
 primaryKeyInputFrame.columnconfigure(0, weight=1)
 primaryKeyInputFrame.columnconfigure(1, weight=1)
 primaryKeyInputFrame.columnconfigure(2, weight=1)
 
-presentyColumnInputFrame = tk.Frame(root)
+presentyColumnInputFrame = customtkinter.CTkFrame(master=root)
 presentyColumnInputFrame.columnconfigure(0, weight=1)
 presentyColumnInputFrame.columnconfigure(1, weight=1)
 presentyColumnInputFrame.columnconfigure(2, weight=1)
 
-text1 = tk.Label(excelInputFrame, text="Enter the number of Excelsheets:", font=("Arial",10))
+text1 = customtkinter.CTkLabel(master=excelInputFrame, text="Enter the number of Excelsheets:", font=("Arial", 16))
 text1.grid(row=0, column=0)
-input1 = tk.Entry(excelInputFrame, font=("Arial", 16))
-input1.grid(row=0, column=1, sticky=tk.W)
-excelInputFrame.pack(padx=10,pady=10)
+input1 = customtkinter.CTkEntry(master=excelInputFrame, font=("Arial", 16))
+input1.grid(row=0, column=1)
 
-btn = tk.Button(root, text="Submit", font=("Arial",10), command= get_excel_no)
-btn.pack()
-
-
-
-
-# for i in range(5):
-#     input = tk.Entry(inputFrame, font=("Arial", 16))
-#     input.grid(row=i, column=0, sticky= tk.W)
-#     btn1 = tk.Button(inputFrame, text="Open File", font=("Arial", 12))
-#     btn1.grid(row=i, column=1)
-#
-# input = tk.Entry(inputFrame, font=("Arial", 16))
-# input.grid(row=1, column=0, sticky=tk.W)
-# btn1 = tk.Button(inputFrame, text="Open File", font=("Arial", 12))
-# btn1.grid(row=1, column=1)
-#
-# input = tk.Entry(inputFrame, font=("Arial", 16))
-# input.grid(row=2, column=0, sticky=tk.W)
-# btn1 = tk.Button(inputFrame, text="Open File", font=("Arial", 12))
-# btn1.grid(row=2, column=1)
+btn = customtkinter.CTkButton(master=excelInputFrame, text="Submit", font=("Arial", 16), command= get_excel_no)
+btn.grid(row=1, column=1, padx=10, pady=12)
+excelInputFrame.pack(padx=20, pady=25, fill="both", expand=False)
 
 
 
-
-# entry = tk.Entry(root)
-# entry.pack()
-btn = tk.Button(root,text="Submit")
-# label3.grid(row=0,column=0)
 root.mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
