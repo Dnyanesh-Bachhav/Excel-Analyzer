@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import PhotoImage
 from tkinter.messagebox import showinfo
@@ -32,7 +33,7 @@ def print_hi(name):
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 def render_heading():
-    text2 = customtkinter.CTkLabel(master=root, text="Enter excel sheets path ", font=("Arial", 16), pady=10)
+    text2 = customtkinter.CTkLabel(master=second_frame, text="Enter excel sheets path ", font=("Arial", 16), pady=10)
     text2.pack()
 
 def select_file():
@@ -398,11 +399,11 @@ def bar_plot():
     plt.pie(data, labels=labels, autopct=lambda p: '{:.0f}'.format(p * total / 100))
     plt.show()
 def render_chart_buttons():
-    btn1 = customtkinter.CTkButton(master=root, text="Bar Plot", font=("Arial", 10), command=bar_plot)
+    btn1 = customtkinter.CTkButton(master=second_frame, text="Bar Plot", font=("Arial", 10), command=bar_plot)
     btn1.pack()
-    btn2 = customtkinter.CTkButton(master=root, text="Submit", font=("Arial", 10))
+    btn2 = customtkinter.CTkButton(master=second_frame, text="Submit", font=("Arial", 10))
     btn2.pack()
-    btn3 = customtkinter.CTkButton(master=root, text="Submit", font=("Arial", 10))
+    btn3 = customtkinter.CTkButton(master=second_frame, text="Submit", font=("Arial", 10))
     btn3.pack()
 
 
@@ -410,7 +411,7 @@ def show_info():
     showinfo("Info", "Primary key for all Excelsheets must be same")
 
 def get_primary_key():
-    text2 = customtkinter.CTkLabel(master=root, text="Enter a primary key", font=("Arial", 16))
+    text2 = customtkinter.CTkLabel(master=second_frame, text="Enter a primary key", font=("Arial", 16))
     text2.pack(padx=10, pady=10)
     label1 = customtkinter.CTkLabel(master=primaryKeyInputFrame, text="Enter primary key for Excelsheets: ", width=270, anchor=tk.CENTER, font=("Arial", 14))
     label1.grid(row=0, column=0)
@@ -427,7 +428,7 @@ def get_primary_key():
 
 
 def get_presenty_column_name():
-    text2 = customtkinter.CTkLabel(master=root, text="Enter a present column", font=("Arial", 16))
+    text2 = customtkinter.CTkLabel(master=second_frame, text="Enter a present column", font=("Arial", 16))
     text2.pack(padx=10, pady=10)
     label1 = customtkinter.CTkLabel(master=presentyColumnInputFrame, text="Enter a presenty column name: ", width=270, anchor=tk.CENTER, font=("Arial", 16))
     label1.grid(row=0, column=0)
@@ -444,7 +445,7 @@ def get_presenty_column_name():
 # input excel files
 def render_input_UI(no_of_excels):
     render_heading()
-    inputFrame = customtkinter.CTkFrame(master=root)
+    inputFrame = customtkinter.CTkFrame(master=second_frame)
     inputFrame.columnconfigure(0, weight=1)
     inputFrame.columnconfigure(1, weight=1)
     inputFrame.columnconfigure(2, weight=1)
@@ -476,40 +477,70 @@ print_hi('PyCharm')
 customtkinter.set_appearance_mode("Light")
 customtkinter.set_default_color_theme("dark-blue")
 root = customtkinter.CTk()
+# root = tk.Tk()
 
 root.title("Excelizer")
 root.geometry("550x500")
 
-label1 = customtkinter.CTkLabel(master=root, text="Excelizer", font=("Arial", 24))
+# Create A Main Frame
+main_frame = customtkinter.CTkFrame(master=root)
+main_frame.pack(fill=tk.BOTH, expand=1)
+
+# Create A Canvas
+my_canvas = tk.Canvas(main_frame)
+my_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+# Add A Scrollbar To The Canvas
+my_scrollbar = ttk.Scrollbar(main_frame, orient=tk.VERTICAL, command=my_canvas.yview, style='Vertical.TScrollbar')
+my_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+# Configure The Canvas
+my_canvas.configure(yscrollcommand=my_scrollbar.set)
+my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion = my_canvas.bbox("all")))
+
+# Create ANOTHER Frame INSIDE the Canvas
+second_frame = tk.Frame(my_canvas)
+
+# Add that New frame To a Window In The Canvas
+my_canvas.create_window((0, 0), window=second_frame, anchor="nw")
+
+# window = customtkinter.CTkScrollableFrame(master=root)
+# scrollbar = customtkinter.CTkScrollbar(master=root)
+# scrollbar.pack( side = customtkinter.RIGHT, fill = customtkinter.Y)
+label1 = customtkinter.CTkLabel(master=second_frame, text="Excelizer", font=("Arial", 24))
 label1.pack(padx=10, pady=10)
 
 
-excelInputFrame = customtkinter.CTkFrame(master=root)
+excelInputFrame = customtkinter.CTkFrame(master=second_frame)
 excelInputFrame.columnconfigure(0, weight=1)
 excelInputFrame.columnconfigure(1, weight=1)
 excelInputFrame.columnconfigure(2, weight=1)
 
-primaryKeyInputFrame = customtkinter.CTkFrame(master=root)
+primaryKeyInputFrame = customtkinter.CTkFrame(master=second_frame)
 primaryKeyInputFrame.columnconfigure(0, weight=1)
 primaryKeyInputFrame.columnconfigure(1, weight=1)
 primaryKeyInputFrame.columnconfigure(2, weight=1)
 
-presentyColumnInputFrame = customtkinter.CTkFrame(master=root)
+presentyColumnInputFrame = customtkinter.CTkFrame(master=second_frame)
 presentyColumnInputFrame.columnconfigure(0, weight=1)
 presentyColumnInputFrame.columnconfigure(1, weight=1)
 presentyColumnInputFrame.columnconfigure(2, weight=1)
 
+outputButtonFrame = customtkinter.CTkFrame(master=second_frame)
+outputButtonFrame.columnconfigure(0, weight=1)
+outputButtonFrame.columnconfigure(1, weight=1)
+outputButtonFrame.columnconfigure(2, weight=1)
+
 text1 = customtkinter.CTkLabel(master=excelInputFrame, text="Enter the number of Excelsheets:", font=("Arial", 16))
-text1.grid(row=0, column=0)
+text1.grid(row=0, column=0, pady=10)
 input1 = customtkinter.CTkEntry(master=excelInputFrame, font=("Arial", 16))
 input1.grid(row=0, column=1)
 
 btn = customtkinter.CTkButton(master=excelInputFrame, text="Submit", font=("Arial", 16), command= get_excel_no)
 btn.grid(row=1, column=1, padx=10, pady=12)
-excelInputFrame.pack(padx=20, pady=25, fill="both", expand=False)
+excelInputFrame.pack(padx=20, pady=20, fill="both", expand=False)
 
 
 
 root.mainloop()
-
 
