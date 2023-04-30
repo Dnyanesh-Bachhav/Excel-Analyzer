@@ -371,6 +371,35 @@ def get_present_count():
     print(final_keys_dict)
     render_chart_buttons()
 
+def bar_plot():
+    present_distinct_values = []
+    for key in final_keys_dict:
+        if final_keys_dict[key] not in present_distinct_values:
+            present_distinct_values.append(final_keys_dict[key])
+
+        # print( key )
+    print( present_distinct_values )
+    dict = {}
+    # Initialize to zero
+    for key in present_distinct_values:
+        dict[key] = 0
+
+    for key in final_keys_dict:
+        dict[ final_keys_dict[key] ] =  dict[ final_keys_dict[key] ] + 1
+
+    print(dict)
+
+    data = []
+    labels = []
+    for key in dict:
+        labels.append(str(key))
+        data.append(dict[key])
+    plt.bar(labels, data, width=0.4)
+    plt.xlabel("No. of days")
+    plt.ylabel("No. of students")
+    plt.title("No. of students present on days")
+    plt.show()
+
 def pie_chart():
     present_distinct_values = []
     for key in final_keys_dict:
@@ -401,7 +430,7 @@ def pie_chart():
 def render_chart_buttons():
     btn = customtkinter.CTkButton(master=outputButtonFrame, text="Pie Chart", width=250, font=("Arial", 16), command=pie_chart)
     btn.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
-    btn1 = customtkinter.CTkButton(master=outputButtonFrame, text="Chart 2", width=250, font=("Arial", 16), command=pie_chart)
+    btn1 = customtkinter.CTkButton(master=outputButtonFrame, text="Bar Chart", width=250, font=("Arial", 16), command=bar_plot)
     btn1.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
     btn2 = customtkinter.CTkButton(master=outputButtonFrame, text=" Chart 3", width=250, font=("Arial", 16), command=pie_chart)
     btn2.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
