@@ -10,6 +10,7 @@ import numpy as np
 import time
 from matplotlib import pyplot as plt
 import customtkinter
+import xlsxwriter
 
 
 
@@ -375,6 +376,20 @@ def get_present_count():
     render_chart_buttons()
 
 
+def getExcel():
+    workbook = xlsxwriter.Workbook("Studentdata.xlsx")
+    work_sheet = workbook.add_worksheet("Sheet 1")
+    row = 1
+    col = 0
+
+    work_sheet.write(0, 0, primary_key)
+    work_sheet.write(0, 1, "No of days")
+    for key in final_keys_dict:
+        work_sheet.write(row, col, key)
+        work_sheet.write(row, col + 1, final_keys_dict[key])
+        row += 1
+    workbook.close()
+
 def count_plot():
     present_values = []
     for key in final_keys_dict:
@@ -452,6 +467,8 @@ def pie_chart():
     plt.pie(data, labels=labels, autopct=lambda p: '{:.0f}'.format(p * total / 100) + " students")
     plt.show()
 def render_chart_buttons():
+    # text3 = customtkinter.CTkLabel(master=second_frame, text="See the Results", font=("Arial", 16))
+    # text3.pack(padx=10, pady=10)
     btn = customtkinter.CTkButton(master=outputButtonFrame, text="Pie Chart", width=250, font=("Arial", 16), command=pie_chart)
     btn.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
     btn1 = customtkinter.CTkButton(master=outputButtonFrame, text="Bar Chart", width=250, font=("Arial", 16), command=bar_plot)
@@ -460,6 +477,16 @@ def render_chart_buttons():
     btn2.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
 
     outputButtonFrame.pack(padx=20, pady=20, fill="both", expand=False)
+    render_excelsheet_UI()
+
+
+def render_excelsheet_UI():
+    # text4 = customtkinter.CTkLabel(master=second_frame, text="Download Excel sheet", font=("Arial", 16))
+    # text4.pack(padx=10, pady=10)
+    btn = customtkinter.CTkButton(master=excelButtonFrame, text="Download Excel", width=250, font=("Arial", 16), command=getExcel)
+    btn.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+
+    excelButtonFrame.pack(padx=20, pady=20, fill="both", expand=False)
 
 
 def show_info():
@@ -588,6 +615,11 @@ outputButtonFrame = customtkinter.CTkFrame(master=second_frame)
 outputButtonFrame.columnconfigure(0, weight=1)
 outputButtonFrame.columnconfigure(1, weight=1)
 outputButtonFrame.columnconfigure(2, weight=1)
+
+excelButtonFrame = customtkinter.CTkFrame(master=second_frame)
+excelButtonFrame.columnconfigure(0, weight=1)
+excelButtonFrame.columnconfigure(1, weight=1)
+excelButtonFrame.columnconfigure(2, weight=1)
 
 text1 = customtkinter.CTkLabel(master=excelInputFrame, text="Enter the number of Excelsheets:", font=("Arial", 16))
 text1.grid(row=0, column=0, pady=10)
