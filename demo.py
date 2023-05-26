@@ -1,18 +1,16 @@
-import customtkinter, tkinter
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-app = customtkinter.CTk()
-app.grid_rowconfigure(0, weight=1)
-app.grid_columnconfigure(0, weight=1)
+plt.rcParams["figure.figsize"] = [7.00, 3.50]
+plt.rcParams["figure.autolayout"] = True
 
-# create scrollable textbox
-tk_textbox = tkinter.Text(app, highlightthickness=0)
-tk_textbox.grid(row=0, column=0, sticky="nsew")
+df = pd.DataFrame(dict(col1=np.array([2, 4, 1, 1, 1, 4])))
 
-# create CTk scrollbar
-ctk_textbox_scrollbar = customtkinter.CTkScrollbar(app, command=tk_textbox.yview, height=200, minimum_pixel_length=50)
-ctk_textbox_scrollbar.grid(row=0, column=1, sticky="ns")
+ax = sns.countplot(x="col1", data=df)
 
-# connect textbox scroll event to CTk scrollbar
-tk_textbox.configure(yscrollcommand=ctk_textbox_scrollbar.set)
+for p in ax.patches:
+   ax.annotate('{:.1f}'.format(p.get_height()), (p.get_x()+0.25, p.get_height()+0.01))
 
-app.mainloop()
+plt.show()

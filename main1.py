@@ -4,6 +4,7 @@ from tkinter import filedialog as fd
 from tkinter import PhotoImage
 from tkinter.messagebox import showinfo
 from csv import excel
+import seaborn as sns
 import pandas as pd
 import numpy as np
 import time
@@ -290,8 +291,10 @@ def get_final_keys_arr():
 
 def get_present_count():
     # Get presenty count of students
+    print("Get present count")
     for item in actual_data:
         #     If key is composite
+        print(item)
         if is_composite_primary_key == True:
             print("Composite primary key...")
             key_arr = ["" for i in range(len(item[0]))]
@@ -371,6 +374,27 @@ def get_present_count():
     print(final_keys_dict)
     render_chart_buttons()
 
+
+def count_plot():
+    present_values = []
+    for key in final_keys_dict:
+        present_values.append(final_keys_dict[key])
+
+        # print( key )
+    print(present_values)
+    # print(dict)
+    # data = [2, 2, 1, 0, 2, 0, 1, 0, 2, 0, 2, 1, 1, 1, 0, 1, 1, 1]
+    plt.rcParams["figure.figsize"] = [7.00, 3.50]
+    plt.rcParams["figure.autolayout"] = True
+    plt.title("Count Plot")
+    plt.ylabel("No of Students")
+    df = pd.DataFrame(dict(No_of_days=np.array(present_values)))
+    ax = sns.countplot(x="No_of_days", data=df)
+    for p in ax.patches:
+        ax.annotate('{:.1f}'.format(p.get_height()), (p.get_x() + 0.25, p.get_height() + 0.01))
+
+    plt.show()
+    # sns.countplot(present_values)
 def bar_plot():
     present_distinct_values = []
     for key in final_keys_dict:
@@ -421,18 +445,18 @@ def pie_chart():
     data = []
     labels = []
     for key in dict:
-        labels.append(key)
+        labels.append(f"{key} days")
         data.append(dict[key])
 
     total = sum(data)
-    plt.pie(data, labels=labels, autopct=lambda p: '{:.0f}'.format(p * total / 100)+" students")
+    plt.pie(data, labels=labels, autopct=lambda p: '{:.0f}'.format(p * total / 100) + " students")
     plt.show()
 def render_chart_buttons():
     btn = customtkinter.CTkButton(master=outputButtonFrame, text="Pie Chart", width=250, font=("Arial", 16), command=pie_chart)
     btn.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
     btn1 = customtkinter.CTkButton(master=outputButtonFrame, text="Bar Chart", width=250, font=("Arial", 16), command=bar_plot)
     btn1.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
-    btn2 = customtkinter.CTkButton(master=outputButtonFrame, text=" Chart 3", width=250, font=("Arial", 16), command=pie_chart)
+    btn2 = customtkinter.CTkButton(master=outputButtonFrame, text="Count Plot", width=250, font=("Arial", 16), command=count_plot)
     btn2.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
 
     outputButtonFrame.pack(padx=20, pady=20, fill="both", expand=False)
@@ -440,6 +464,9 @@ def render_chart_buttons():
 
 def show_info():
     showinfo("Info", "Primary key for all Excelsheets must be same")
+
+def presenty_column_modal():
+    showinfo("Info", "Name of presenty column must be same as it is in excel sheet")
 
 def get_primary_key():
     text2 = customtkinter.CTkLabel(master=second_frame, text="Enter a primary key", font=("Arial", 16))
@@ -466,7 +493,7 @@ def get_presenty_column_name():
     present_column_input = customtkinter.CTkEntry(master=presentyColumnInputFrame, font=("Arial", 16))
     present_column_input.grid(row=0, column=1)
 
-    btn1 = customtkinter.CTkButton(master=presentyColumnInputFrame, text="I", font=("Arial italic bold", 16), width=70, command=show_info)
+    btn1 = customtkinter.CTkButton(master=presentyColumnInputFrame, text="I", font=("Arial italic bold", 16), width=70, command=presenty_column_modal)
     btn1.grid(row=0, column=2, padx=10, pady=10)
     btn = customtkinter.CTkButton(master=presentyColumnInputFrame, text="Submit", font=("Arial", 16), width=250, command=lambda: handle_presenty_column(present_column_input))
     btn.grid(row=1, column=1, padx=10, pady=10)
@@ -574,4 +601,3 @@ excelInputFrame.pack(padx=20, pady=20, fill="both", expand=False)
 
 
 root.mainloop()
-
