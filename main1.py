@@ -113,13 +113,15 @@ def get_necessary_data():
 
 def identify_key_and_format(item_name, data):
     item_name = item_name.lower()
-
     rollno = ["roll", "rollno", "roll_no", "roll number", "roll no"]
     email = ["email", "emailid", "email_id"]
     phone = ["phone", "phoneno", "phone no", "phone_no"]
     global isRollNo
     global isEmail
     global isPhone
+    global userData
+
+    userData = ["" for i in range(len(data[0]))]
 
     #    Check if key is rollno
     for item in rollno:
@@ -156,6 +158,11 @@ def identify_key_and_format(item_name, data):
         print("Roll no. formatting")
 
         for item1 in data:
+
+            # for userdata
+            for i in range(len(item1)):
+                userData[i] = userData[i] + str(item1[i]) + "_"
+
             item1 = str(item1)
             key = np.nan
             if len(item1) > 3:
@@ -171,11 +178,17 @@ def identify_key_and_format(item_name, data):
 
     elif isEmail == True:
         print("Email formatting")
+        for item1 in data:
+            item1 = str(item1).lower()
+            key_arr.append(key)
+
     elif isPhone == True:
 
         print("Phone Formatting")
 
     print("Called...", item_name)
+    print("Userdata: ")
+    print(userData)
     return key_arr
 
 
@@ -186,6 +199,12 @@ def handle_composite_primary_key(data):
     global isCompRollNo
     global isCompEmail
     global isCompPhone
+    global userData
+    isCompRollNo = False
+    isCompPhone = False
+    isCompEmail = False
+
+    userData = ["" for i in range(len(data[0]))]
     key_arr1 = ["" for i in range(len(data[0]))]
     for item in data:
         rollno = ["roll", "rollno", "roll_no", "roll number", "roll no"]
@@ -194,14 +213,35 @@ def handle_composite_primary_key(data):
         column_name = item.name
         column_name = column_name.lower()
         print("HIII: ", column_name)
+
+        # for userdata
+        for i in range(len(item)):
+            userData[i] = userData[i] + str(item[i]) + "_"
         #    Check if key is rollno
         for li in rollno:
             if (column_name in li):
                 isCompRollNo = True
                 break
+
+        #    Check if key is email
+        for li in email:
+            if (column_name in li):
+                isCompEmail = True
+                break
+        if isCompEmail == True:
+            print("Email formatting")
+
+        #    Check if key is phone
+        for li in phone:
+            if (column_name in li):
+                isCompPhone = True
+                break
+        if isCompPhone == True:
+            print("Phone formatting")
+
+
         if isCompRollNo == True:
             print("Roll no. formatting")
-
             for i in range(len(item)):
                 item1 = str(item[i])
                 key = np.nan
@@ -217,8 +257,17 @@ def handle_composite_primary_key(data):
 
         elif isCompEmail == True:
             print("Email formatting")
+            for i in range(len(item)):
+                item1 = str(item[i])
+                key = item1
+                key_arr1[i] = key_arr1[i] + str(key)
+
         elif isCompPhone == True:
             print("Phone Formatting")
+            for i in range(len(item)):
+                item1 = str(item[i])
+                key = item1
+                key_arr1[i] = key_arr1[i] + str(key)
         else:
             for i in range(len(item)):
                 item1 = str(item[i])
@@ -230,6 +279,8 @@ def handle_composite_primary_key(data):
         isCompPhone = False
 
     print("Handle composite primary key...")
+    print("Userdata: ")
+    print(userData)
     return key_arr1
 
 
@@ -371,7 +422,6 @@ def get_present_count():
                 print("It is Phone...")
     #                 column_name = item[i]
     #                 print(column_name)
-
     print(final_keys_dict)
     render_chart_buttons()
 
@@ -382,13 +432,45 @@ def getExcel():
     row = 1
     col = 0
 
-    work_sheet.write(0, 0, primary_key)
-    work_sheet.write(0, 1, "No of days")
-    for key in final_keys_dict:
-        work_sheet.write(row, col, key)
-        work_sheet.write(row, col + 1, final_keys_dict[key])
-        row += 1
+    column_names = primary_key.split(",")
+    column_names.append("key")
+    column_names.append("No_of_days")
+    keys = list(final_keys_dict.keys())
+    values = list(final_keys_dict.values())
+    if is_composite_primary_key == True:
+        for i in range(len(userData)):
+            userData[i] = userData[i] + keys[i] + "_"
+            #     print(values[i])
+            userData[i] = userData[i] + str(values[i])
+
+        excel_data = []
+        excel_data.append(column_names)
+        for user in userData:
+            data = user.split("_")
+            excel_data.append(data)
+
+
+        # work_sheet.write(0, 0, primary_key)
+        # work_sheet.write(0, 1, "No of days")
+        for data in excel_data:
+            for i in range(len(data)):
+                work_sheet.write(row, i, data[i])
+                # work_sheet.write(row, col + 1, final_keys_dict[key])
+            row += 1
+    else:
+        excel_data = []
+        excel_data.append(column_names)
+        for key in final_keys_dict:
+            work_sheet.write(row, col, key)
+            work_sheet.write(row, col+1, key)
+            work_sheet.write(row, col+2, final_keys_dict[key])
+            row += 1
+
+
     workbook.close()
+
+    showinfo("Info", "Excel Downloaded Successfully...")
+
 
 def count_plot():
     present_values = []
@@ -619,7 +701,6 @@ outputButtonFrame.columnconfigure(2, weight=1)
 excelButtonFrame = customtkinter.CTkFrame(master=second_frame)
 excelButtonFrame.columnconfigure(0, weight=1)
 excelButtonFrame.columnconfigure(1, weight=1)
-excelButtonFrame.columnconfigure(2, weight=1)
 
 text1 = customtkinter.CTkLabel(master=excelInputFrame, text="Enter the number of Excelsheets:", font=("Arial", 16))
 text1.grid(row=0, column=0, pady=10)
